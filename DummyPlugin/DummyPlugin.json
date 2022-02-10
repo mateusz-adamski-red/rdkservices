@@ -1,0 +1,86 @@
+{
+    "$schema": "https://raw.githubusercontent.com/rdkcentral/Thunder/master/Tools/JsonGenerator/schemas/interface.schema.json",
+    "jsonrpc": "2.0",
+    "info": {
+        "title": "FrameRate API", 
+        "class": "FrameRate", 
+        "description": "The `FrameRate` plugin allows you to collect FPS data."
+    },
+    "definitions": {
+        "result": {
+            "type":"object",
+            "properties": {
+                "success": {
+                    "$ref": "#/definitions/success"
+                }
+            },
+            "required": [
+                "success"
+            ]
+        },
+        "success": {
+            "summary": "Whether the request succeeded",
+            "type": "boolean",
+            "example": "true"
+        },
+        "value2": {
+            "summary": "Second dummy value",
+            "type": "string",
+            "example": "abc"
+        }
+    },
+    "methods": {
+        "getDummyValue":{
+            "summary": "Returns 2 dummy values and trigger an event",
+            "result": {
+                "type":"object",
+                "properties": {
+                    "supportedResolutions":{
+                        "summary": "A string array of 2 dummy values",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example":  "abc"
+                        }
+                    },
+                    "success": {
+                        "$ref": "#/definitions/success"
+                    }
+                },
+                "required": [
+                    "success"
+                ]
+            }
+        },
+        "setDummyValue": {
+            "summary": "Set 2 dummy values",
+            "params": {
+                "type": "object",
+                "properties": {
+                    "value1": {
+                        "summary": "First dummy value",
+                        "type": "string",
+                        "default": false,
+                        "example": "abc"
+                    },
+                    "value2": {
+                        "$ref": "#/definitions/value2"
+                    },
+                    "persist": {
+                        "summary":"optionalValue",
+                        "type": "boolean",
+                        "example": true
+                    }
+                }
+            },
+            "result": {
+                "$ref": "#/definitions/result"
+            }
+        }
+    },
+    "events":{
+        "observeDummyValue":{
+            "summary": "Triggered when the setDummyValue will be called, just for testing purposes"
+        }
+    }
+}
