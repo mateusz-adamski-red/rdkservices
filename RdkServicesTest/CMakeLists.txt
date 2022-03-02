@@ -30,6 +30,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(${PROJECT_NAME}
+        Tests/AVInputTest.cpp
         Tests/LocationSyncTest.cpp
         Tests/PersistentStoreTest.cpp
         Tests/SqliteStoreTest.cpp
@@ -38,12 +39,13 @@ add_executable(${PROJECT_NAME}
         Module.cpp
         )
 
-include_directories(../LocationSync ../PersistentStore ../SecurityAgent)
-link_directories(../LocationSync ../PersistentStore ../SecurityAgent)
+include_directories(../AVInput ../LocationSync ../PersistentStore ../SecurityAgent)
+link_directories(../AVInput ../LocationSync ../PersistentStore ../SecurityAgent)
 
 target_link_libraries(${PROJECT_NAME}
         gmock_main
         ${NAMESPACE}Plugins::${NAMESPACE}Plugins
+        ${NAMESPACE}AVInput
         ${NAMESPACE}LocationSync
         ${NAMESPACE}PersistentStore
         ${NAMESPACE}SecurityAgent

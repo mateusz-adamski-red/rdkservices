@@ -21,16 +21,14 @@
 
 #include <mutex>
 #include "Module.h"
-#include "utils.h"
-#include "AbstractPlugin.h"
 #include <websocket/websocket.h>
-#include "tptimer.h"
+#include "../helpers/tptimer.h"
 
 namespace WPEFramework {
 
     namespace Plugin {
 
-        class AVInput :  public AbstractPlugin {
+        class AVInput : public PluginHost::IPlugin, public PluginHost::JSONRPC {
         public:
             AVInput();
             virtual ~AVInput();
@@ -40,6 +38,11 @@ namespace WPEFramework {
 
         public/*members*/:
             static AVInput* _instance;
+
+            BEGIN_INTERFACE_MAP(MODULE_NAME)
+            INTERFACE_ENTRY(PluginHost::IPlugin)
+            INTERFACE_ENTRY(PluginHost::IDispatcher)
+            END_INTERFACE_MAP
 
         public /*constants*/:
             static const short API_VERSION_NUMBER_MAJOR;

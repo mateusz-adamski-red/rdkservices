@@ -24,8 +24,9 @@ find_package(${NAMESPACE}Protocols REQUIRED)
 add_library(${MODULE_NAME} SHARED
         AVInput.cpp
         Module.cpp
+        Utils.cpp
+        hdmiIn.cpp
         ../helpers/tptimer.cpp
-        ../helpers/utils.cpp
         )
 
 set_target_properties(${MODULE_NAME} PROPERTIES
@@ -34,21 +35,28 @@ set_target_properties(${MODULE_NAME} PROPERTIES
 
 target_compile_definitions(${MODULE_NAME} PRIVATE MODULE_NAME=Plugin_${PLUGIN_NAME})
 
-target_include_directories(${MODULE_NAME} PRIVATE ../helpers)
-
+find_package(Curl)
 target_link_libraries(${MODULE_NAME}
         PRIVATE
+        ${CURL_LIBRARY}
         ${NAMESPACE}Protocols::${NAMESPACE}Protocols
-        ${NAMESPACE}SecurityUtil
         )
-find_package(DS)
-find_package(IARMBus)
 
-target_include_directories(${MODULE_NAME} PRIVATE ${DS_INCLUDE_DIRS})
-target_include_directories(${MODULE_NAME} PRIVATE ${IARMBUS_INCLUDE_DIRS})
 target_include_directories(${MODULE_NAME} PRIVATE ../helpers)
 
-target_link_libraries(${MODULE_NAME} PUBLIC ${NAMESPACE}Plugins::${NAMESPACE}Plugins ${IARMBUS_LIBRARIES} ${DS_LIBRARIES} )
+find_package(DS)
+if (DS_FOUND)
+    target_include_directories(${MODULE_NAME} PRIVATE ${DS_INCLUDE_DIRS})
+    find_package(IARMBus)
+    if (IARMBus_FOUND)
+        target_include_directories(${MODULE_NAME} PRIVATE ${IARMBUS_INCLUDE_DIRS})
+        target_link_libraries(${MODULE_NAME} PUBLIC ${NAMESPACE}Plugins::${NAMESPACE}Plugins ${IARMBUS_LIBRARIES} ${DS_LIBRARIES} )
+    else(IARMBus_FOUND)
+        target_link_libraries(${MODULE_NAME} PUBLIC ${NAMESPACE}Plugins::${NAMESPACE}Plugins ${DS_LIBRARIES} )
+    endif(IARMBus_FOUND)
+else (DS_FOUND)
+    target_link_libraries(${MODULE_NAME} PUBLIC ${NAMESPACE}Plugins::${NAMESPACE}Plugins)
+endif(DS_FOUND)
 
 install(TARGETS ${MODULE_NAME}
         DESTINATION lib/${STORAGE_DIRECTORY}/plugins)

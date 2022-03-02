@@ -18,6 +18,7 @@
 **/
 
 #include "AVInput.h"
+#include "Utils.h"
 #include "hdmiIn.hpp"
 
 const short WPEFramework::Plugin::AVInput::API_VERSION_NUMBER_MAJOR = 1;
@@ -49,24 +50,28 @@ namespace WPEFramework {
         AVInput* AVInput::_instance = nullptr;
 
         AVInput::AVInput()
-            : AbstractPlugin()
+            : PluginHost::JSONRPC()
             , m_apiVersionNumber(API_VERSION_NUMBER_MAJOR)
             , m_client(nullptr)
             , m_subscribed(false)
         {
             LOGINFO("ctor");
             AVInput::_instance = this;
-            registerMethod(METHOD_GET_API_VERSION_NUMBER, &AVInput::getApiVersionNumber, this);
-            registerMethod(AVINPUT_METHOD_NUMBER_OF_INPUTS, &AVInput::numberOfInputsWrapper, this);
-            registerMethod(AVINPUT_METHOD_CURRENT_VIDEO_MODE, &AVInput::currentVideoModeWrapper, this);
-            registerMethod(AVINPUT_METHOD_CONTENT_PROTECTED, &AVInput::contentProtectedWrapper, this);
+            Register(METHOD_GET_API_VERSION_NUMBER, &AVInput::getApiVersionNumber, this);
+            Register(AVINPUT_METHOD_NUMBER_OF_INPUTS, &AVInput::numberOfInputsWrapper, this);
+            Register(AVINPUT_METHOD_CURRENT_VIDEO_MODE, &AVInput::currentVideoModeWrapper, this);
+            Register(AVINPUT_METHOD_CONTENT_PROTECTED, &AVInput::contentProtectedWrapper, this);
 
             m_timer.connect(std::bind(&AVInput::onTimer, this));
         }
 
         AVInput::~AVInput()
         {
-            //LOGINFO("dtor");
+            LOGINFO("dtor");
+            Unregister(METHOD_GET_API_VERSION_NUMBER);
+            Unregister(AVINPUT_METHOD_NUMBER_OF_INPUTS);
+            Unregister(AVINPUT_METHOD_CURRENT_VIDEO_MODE);
+            Unregister(AVINPUT_METHOD_CONTENT_PROTECTED);
         }
 
         const string AVInput::Initialize(PluginHost::IShell* /* service */)
@@ -155,18 +160,18 @@ namespace WPEFramework {
         {
             int res = 0;
             LOGINFO("Invoking device::HdmiInput::getInstance().GetNumberOfInputs()");
-            try
-            {
+           // try
+           // {
                 res = device::HdmiInput::getInstance().getNumberOfInputs();;
-            }
-            catch (...)
-            {
-                LOGERR("Exception caught");
-                if (pSuccess) {
-                    *pSuccess = false;
-                }
-                return res;
-            }
+           // }
+            // catch (...)
+            // {
+            //     LOGERR("Exception caught");
+            //     if (pSuccess) {
+            //         *pSuccess = false;
+            //     }
+            //     return res;
+            // }
             if (pSuccess) {
                 *pSuccess = true;
             }
@@ -177,18 +182,18 @@ namespace WPEFramework {
         {
             string res;
             LOGINFO("Invoking device::HdmiInput::getInstance().getCurrentVideoMode()");
-            try
-            {
+            //try
+            //{
                 res  = device::HdmiInput::getInstance().getCurrentVideoMode();
-            }
-            catch (...)
-            {
-                LOGERR("Exception caught");
-                if (pSuccess) {
-                    *pSuccess = false;
-                }
-                return res;
-            }
+           // }
+            // catch (...)
+            // {
+            //     LOGERR("Exception caught");
+            //     if (pSuccess) {
+            //         *pSuccess = false;
+            //     }
+            //     return res;
+            // }
             if (pSuccess) {
                 *pSuccess = true;
             }
@@ -251,6 +256,7 @@ namespace WPEFramework {
             string method = "status@" + string(callSign);
             Core::JSON::ArrayType<PluginHost::MetaData::Service> joResult;
             getThunderControllerClient()->Get<Core::JSON::ArrayType<PluginHost::MetaData::Service> >(2000, method.c_str(),joResult);
+            //std::this_thread::sleep_for(std::chrono::seconds(100000));
             LOGINFO("Getting status for callSign %s, result: %s", callSign, joResult[0].JSONState.Data().c_str());
             bool pluginActivated = joResult[0].JSONState == PluginHost::IShell::ACTIVATED;
             auto p = m_activatedPlugins.find(string(callSign));
