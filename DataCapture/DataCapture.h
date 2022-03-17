@@ -34,7 +34,7 @@ namespace WPEFramework {
             virtual const string Initialize(PluginHost::IShell* service) override;
             virtual void Deinitialize(PluginHost::IShell* service) override;
             virtual string Information() const override;
-            void eventHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
+            virtual void eventHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
 
             BEGIN_INTERFACE_MAP(MODULE_NAME)
             INTERFACE_ENTRY(PluginHost::IPlugin)

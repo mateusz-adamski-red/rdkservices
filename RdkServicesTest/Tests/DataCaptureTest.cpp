@@ -19,17 +19,20 @@
 
 #include "gtest/gtest.h"
 
-#include "DataCapture.h"
+#include "Source/libIBus.h"
+#include "DataCaptureMock.h"
+
+using testing::_;
 
 namespace WPEFramework {
 
 class DataCaptureTest : public ::testing::Test {
 public:
-    DataCaptureTest(): dataCapture_(Core::ProxyType<Plugin::DataCapture>::Create()), handler_(*dataCapture_), connection_(1, 0) {
+    DataCaptureTest(): dataCapture_(Core::ProxyType<DataCaptureMock>::Create()), handler_(*dataCapture_), connection_(1, 0) {
     }
 
 protected:
-    Core::ProxyType<Plugin::DataCapture> dataCapture_;
+    Core::ProxyType<DataCaptureMock> dataCapture_;
     Core::JSONRPC::Handler& handler_;
     Core::JSONRPC::Connection connection_;
 };
@@ -88,6 +91,28 @@ TEST_F(DataCaptureTest, ShouldTurnOffAudioCapture) {
                              _T("{\"clipRequest\":{\"stream\":\"primary\",\"url\":\"https://192.168.0.1\",\"duration\":8,\"captureMode\":\"preCapture\"}}"),
                              response));
     EXPECT_EQ(response, _T("{\"error\":0,\"success\":true}"));
+}
+
+TEST_F(DataCaptureTest, ShouldSendEvent) {
+    constexpr const char dataLocator[] = "dataLocator123";
+    constexpr const char owner[] = "DataCaptureTest";
+
+    EXPECT_EQ(std::string{}, dataCapture_->Initialize(nullptr));
+
+    // Trigger event
+    iarmbus_notification_payload_t data;
+    data.dataLocator = dataLocator;
+    EXPECT_CALL(*dataCapture_, eventHandler(owner, DATA_CAPTURE_IARM_EVENT_AUDIO_CLIP_READY, _, sizeof(data))).WillOnce(
+        [dataLocator](const char *owner, IARM_EventId_t eventId, void *data, size_t len) {
+            std::cout << "CHECK!" << std::endl;
+            iarmbus_notification_payload_t * payload = static_cast <iarmbus_notification_payload_t *> (data);
+            EXPECT_EQ(payload->dataLocator, dataLocator);
+        }
+    );
+
+    ASSERT_TRUE(triggerEvent(owner, DATA_CAPTURE_IARM_EVENT_AUDIO_CLIP_READY, static_cast<void*>(&data), sizeof(data)));
+
+    dataCapture_->Deinitialize(nullptr);
 }
 
 } // namespace WPEFramework

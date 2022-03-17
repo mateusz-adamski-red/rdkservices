@@ -114,18 +114,11 @@ buildAndInstallThunderInterfaces() {
   make -C build/ThunderInterfaces $THREADS && make -C build/ThunderInterfaces install $THREADS
 }
 
-insertMockHeaders() {
-  cd "${ROOT}/../DataCapture" || exit 1
-
-  sed -i 's|"libIARM.h"|"../RdkServicesTest/Mocks/libIARM.h"|g' DataCapture.h
-  sed -i 's|"libIBus.h"|"../RdkServicesTest/Mocks/libIBus.h"|g' DataCapture.h
-  sed -i 's|"audiocapturemgr_iarm.h"|"../RdkServicesTest/Mocks/audiocapturemgr_iarm.h"|g' DataCapture.cpp
-}
-
 buildAndInstallRdkservices() {
   cd "${THUNDER_ROOT}" || exit 1
 
   cmake -H../.. -Bbuild/rdkservices \
+    -DCMAKE_CXX_FLAGS="-I ${ROOT}/Source" \
     -DCMAKE_INSTALL_PREFIX="${THUNDER_INSTALL_DIR}/usr" \
     -DCMAKE_MODULE_PATH="${THUNDER_INSTALL_DIR}/tools/cmake" \
     -DCMAKE_CXX_FLAGS="--coverage -Wall -Werror -Wno-unused-parameter" \
@@ -138,13 +131,6 @@ buildAndInstallRdkservices() {
     -DCMAKE_BUILD_TYPE=$MODE \
 
   make -C build/rdkservices $THREADS && make -C build/rdkservices install $THREADS
-}
-
-deleteMockHeaders() {
-  cd "${ROOT}/../DataCapture" || exit 1
-
-  sed -i 's|../RdkServicesTest/Mocks/||g' DataCapture.h
-  sed -i 's|../RdkServicesTest/Mocks/||g' DataCapture.cpp
 }
 
 if ! checkPython "Python 3"; then
@@ -173,11 +159,7 @@ buildAndInstallThunderInterfaces
 
 checkWPEFramework
 
-insertMockHeaders
-
 buildAndInstallRdkservices
-
-deleteMockHeaders
 
 echo "==== DONE ===="
 
