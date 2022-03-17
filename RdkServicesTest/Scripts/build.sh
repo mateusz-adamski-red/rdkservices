@@ -118,10 +118,9 @@ buildAndInstallRdkservices() {
   cd "${THUNDER_ROOT}" || exit 1
 
   cmake -H../.. -Bbuild/rdkservices \
-    -DCMAKE_CXX_FLAGS="-I ${ROOT}/Source" \
     -DCMAKE_INSTALL_PREFIX="${THUNDER_INSTALL_DIR}/usr" \
     -DCMAKE_MODULE_PATH="${THUNDER_INSTALL_DIR}/tools/cmake" \
-    -DCMAKE_CXX_FLAGS="--coverage -Wall -Werror -Wno-unused-parameter" \
+    -DCMAKE_CXX_FLAGS="-I ${ROOT}/Source --coverage -Wall -Werror -Wno-unused-parameter" \
     -DCOMCAST_CONFIG=OFF \
     -DPLUGIN_DATACAPTURE=ON \
     -DPLUGIN_LOCATIONSYNC=ON \

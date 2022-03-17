@@ -74,7 +74,7 @@ int socket_adaptor::connect_socket(const std::string &path)
         /* start with a clean address structure */
         memset(&address, 0, sizeof(struct sockaddr_un));
         address.sun_family = AF_UNIX;
-        snprintf(address.sun_path, 108, path.c_str());
+        snprintf(address.sun_path, 108, "%s", path.c_str());
         if(connect(m_read_fd, (struct sockaddr *) &address, sizeof(struct sockaddr_un)) == 0)
         {
             SA_INFO("socket connected: %s\n", path.c_str());
