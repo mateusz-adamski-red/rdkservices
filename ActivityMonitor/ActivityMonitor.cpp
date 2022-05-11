@@ -18,6 +18,7 @@
 **/
 
 #include "ActivityMonitor.h"
+#include <iostream>
 
 #include "utils.h"
 
