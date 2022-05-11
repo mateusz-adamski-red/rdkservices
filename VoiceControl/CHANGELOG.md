@@ -12,6 +12,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Change
 - Reset API version to 1.0.0
 - Change README to inform how to update changelog and API version
-
-### Removed
-- Test test tes
