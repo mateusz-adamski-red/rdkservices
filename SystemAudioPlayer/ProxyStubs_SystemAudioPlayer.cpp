@@ -42,14 +42,24 @@ namespace ProxyStubs {
         // virtual uint32_t Configure(PluginHost::IShell*) = 0
         //
         [](Core::ProxyType<Core::IPCChannel>& channel, Core::ProxyType<RPC::InvokeMessage>& message) {
+            SYSLOG(Trace::Error, (_T("[MY_LOGG] [](Core::ProxyType<Core::IPCChannel>& channel, Core::ProxyType<RPC::InvokeMessage>& message)")));
             RPC::Data::Input& input(message->Parameters());
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] create input")));
 
             // read parameters
             RPC::Data::Frame::Reader reader(input.Reader());
             RPC::instance_id param0 = reader.Number<RPC::instance_id>();
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Read params"));
             PluginHost::IShell* param0_proxy = nullptr;
             ProxyStub::UnknownProxy* param0_proxy_inst = nullptr;
             if (param0 != 0) {
+                if ((param0_proxy_inst == nullptr)
+                    SYSLOG(Trace::Error, (_T(, "[MY_LOGG] param0_proxy_inst == nullptr")));
+                }
+                if ((param0_proxy == nullptr) {
+                    SYSLOG(Trace::Error, (_T(, "[MY_LOGG] param0_proxy == nullptr")));
+                }
+
                 param0_proxy_inst = RPC::Administrator::Instance().ProxyInstance(channel, param0, false, param0_proxy);
                 ASSERT((param0_proxy_inst != nullptr) && (param0_proxy != nullptr) && "Failed to get instance of PluginHost::IShell proxy");
 
@@ -58,18 +68,29 @@ namespace ProxyStubs {
                 }
             }
 
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Write return value")));
             // write return value
             RPC::Data::Frame::Writer writer(message->Response().Writer());
+             SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Finish write return value")));
 
             // call implementation
             ISystemAudioPlayer* implementation = reinterpret_cast<ISystemAudioPlayer*>(input.Implementation());
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Get implementation")));
+            if (!implementation) {
+                SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Implementation is nullptr!!!")));
+            }
             ASSERT((implementation != nullptr) && "Null ISystemAudioPlayer implementation pointer");
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Call implementation->Configure")));
             const uint32_t output = implementation->Configure(param0_proxy);
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Finish calling implementation->Configure!")));
             writer.Number<const uint32_t>(output);
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Write output")));
 
             if (param0_proxy_inst != nullptr) {
+                SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Release")));
                 RPC::Administrator::Instance().Release(param0_proxy_inst, message->Response());
             }
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Finish function")));
         },
 
         // virtual void Register(ISystemAudioPlayer::INotification*) = 0
@@ -442,6 +463,7 @@ namespace ProxyStubs {
         uint32_t Configure(PluginHost::IShell* param0) override
         {
             IPCMessage newMessage(BaseClass::Message(0));
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] uint32_t Configure(PluginHost::IShell* param0) override:")));
 
             // write parameters
             RPC::Data::Frame::Writer writer(newMessage->Parameters().Writer());
@@ -449,14 +471,18 @@ namespace ProxyStubs {
 
             // invoke the method handler
             uint32_t output{};
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] InvokeMethod")));
             if ((output = Invoke(newMessage)) == Core::ERROR_NONE) {
                 // read return value
+                SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Finish Invoke without error")));
                 RPC::Data::Frame::Reader reader(newMessage->Response().Reader());
+                SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Reader")));
                 output = reader.Number<uint32_t>();
-
+                SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Complete")));
                 Complete(reader);
             }
 
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Return output")));
             return output;
         }
 

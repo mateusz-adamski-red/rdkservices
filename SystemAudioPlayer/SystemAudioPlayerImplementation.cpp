@@ -47,6 +47,7 @@ namespace Plugin {
     {
         AudioPlayer::Init(this);
         SAPLOG_INFO("SAP: SystemAudioPlayerImplementation Constructor\n");
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] SystemAudioPlayerImplementation Constructor!")));
     }
 
     SystemAudioPlayerImplementation::~SystemAudioPlayerImplementation()
@@ -57,7 +58,7 @@ namespace Plugin {
 
     uint32_t SystemAudioPlayerImplementation::Configure(PluginHost::IShell* service)
     {
-     
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Configure called!!!!")));
     }
 
     void SystemAudioPlayerImplementation::Register(Exchange::ISystemAudioPlayer::INotification* sink)

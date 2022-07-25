@@ -63,8 +63,11 @@ namespace Plugin {
         if(_sap != nullptr) {
             ASSERT(_connectionId != 0);
 
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] _sap->Configure(_service)!")));
             _sap->Configure(_service);
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] _sap->Register!")));
             _sap->Register(&_notification);
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] RegisterAll!")));
             RegisterAll();
         } else {
             message = _T("SystemAudioPlayer could not be instantiated.");
@@ -79,15 +82,21 @@ namespace Plugin {
     {
         ASSERT(_service == service);
         ASSERT(_sap != nullptr);
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Deinitialize")));
 
         if (!_sap)
             return;
 
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Unregister sap!")));
         _sap->Unregister(&_notification);
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Unregister service")));
         _service->Unregister(&_notification);
 
+
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Try relase sap")));
         if(_sap->Release() != Core::ERROR_DESTRUCTION_SUCCEEDED) {
             ASSERT(_connectionId != 0);
+            SYSLOG(Trace::Error, (_T(, "[MY_LOGG] HERE!!!!!!")));
             TRACE_L1("SystemAudioPlayer Plugin is not properly destructed. %d", _connectionId);
 
             RPC::IRemoteConnection* connection(_service->RemoteConnection(_connectionId));
@@ -101,6 +110,7 @@ namespace Plugin {
         }
         // Deinitialize what we initialized..
         _service = nullptr;
+        SYSLOG(Trace::Error, (_T(, "[MY_LOGG] Set sap nullptr!")));
         _sap = nullptr;
     }
 
